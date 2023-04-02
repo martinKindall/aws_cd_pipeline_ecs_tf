@@ -20,6 +20,14 @@ resource "aws_lb_target_group" "my_Tg" {
   vpc_id      = aws_default_vpc.default.id
 }
 
+resource "aws_lb_target_group" "my_Tg_2" {
+  name        = "tf-example-lb-tg-2"
+  port        = "80"
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = aws_default_vpc.default.id
+}
+
 resource "aws_lb" "myAlb" {
   name               = "test-lb-tf"
   internal           = false

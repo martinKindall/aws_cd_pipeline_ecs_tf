@@ -28,8 +28,8 @@ resource "aws_ecs_service" "my_service" {
   }
 
   network_configuration {
-    subnets         = data.aws_subnets.mySubnets.ids
-    security_groups = [aws_security_group.spring_app.id]
+    subnets          = data.aws_subnets.mySubnets.ids
+    security_groups  = [aws_security_group.spring_app.id]
     assign_public_ip = true
   }
 }
