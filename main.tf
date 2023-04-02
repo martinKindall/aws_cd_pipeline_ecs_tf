@@ -7,51 +7,27 @@ resource "aws_ecs_cluster" "my_cluster" {
   name = "exampleClusterTf"
 }
 
-resource "aws_ecs_task_definition" "service" {
-  family                   = "springApp"
-  requires_compatibilities = ["FARGATE"]
-  network_mode             = "awsvpc"
-  cpu                      = 1024
-  memory                   = 2048
-  execution_role_arn       = aws_iam_role.ecs_task_executor.arn
+resource "aws_ecs_service" "my_service" {
+  name            = "springApp"
+  cluster         = aws_ecs_cluster.my_cluster.id
+  task_definition = "arn:aws:ecs:eu-central-1:371417955885:task-definition/spring_app"
+  desired_count   = 0
+  depends_on = [
+    aws_lb.myAlb
+  ]
 
-  runtime_platform {
-    cpu_architecture        = "X86_64"
-    operating_system_family = "LINUX"
+  scheduling_strategy = "REPLICA"
+  launch_type         = "FARGATE"
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.my_Tg.arn
+    container_name   = "spring_ex"
+    container_port   = 80
   }
 
-  container_definitions = jsonencode([
-    {
-      "name" : "spring_ex",
-      "image" : "371417955885.dkr.ecr.eu-central-1.amazonaws.com/spring_example",
-      "cpu" : 0,
-      "portMappings" : [
-        {
-          "name" : "spring_ex-80-tcp",
-          "containerPort" : 80,
-          "hostPort" : 80,
-          "protocol" : "tcp",
-          "appProtocol" : "http"
-        }
-      ],
-      "essential" : true,
-      "environment" : [
-        {
-          "name" : "SPRING_PROFILES_ACTIVE",
-          "value" : "production"
-        }
-      ],
-      "mountPoints" : [],
-      "volumesFrom" : [],
-      "logConfiguration" : {
-        "logDriver" : "awslogs",
-        "options" : {
-          "awslogs-create-group" : "true",
-          "awslogs-group" : "/ecs/spring_app",
-          "awslogs-region" : "eu-central-1",
-          "awslogs-stream-prefix" : "ecs"
-        }
-      }
-    }
-  ])
+  network_configuration {
+    subnets         = data.aws_subnets.mySubnets.ids
+    security_groups = [aws_security_group.spring_app.id]
+    assign_public_ip = true
+  }
 }
