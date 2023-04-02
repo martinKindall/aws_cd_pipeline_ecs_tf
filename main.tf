@@ -3,6 +3,8 @@ provider "aws" {
   region = var.aws_region
 }
 
+data "aws_caller_identity" "current" {}
+
 resource "aws_ecs_cluster" "my_cluster" {
   name = "exampleClusterTf"
 }
@@ -10,14 +12,14 @@ resource "aws_ecs_cluster" "my_cluster" {
 resource "aws_ecs_service" "my_service" {
   name            = "springApp"
   cluster         = aws_ecs_cluster.my_cluster.id
-  task_definition = "arn:aws:ecs:eu-central-1:371417955885:task-definition/spring_app"
+  task_definition = format("arn:aws:ecs:%s:%s:task-definition/spring_app", var.aws_region, data.aws_caller_identity.current.account_id)
   desired_count   = 0
-  depends_on = [
-    aws_lb.myAlb
-  ]
 
   scheduling_strategy = "REPLICA"
   launch_type         = "FARGATE"
+  deployment_controller {
+    type = "CODE_DEPLOY"
+  }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.my_Tg.arn
