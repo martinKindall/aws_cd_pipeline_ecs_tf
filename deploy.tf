@@ -44,6 +44,7 @@ resource "aws_codepipeline" "codepipeline" {
 
       configuration = {
         RepositoryName = "spring_example"
+        ImageTag = "latest"
       }
     }
   }
@@ -64,7 +65,7 @@ resource "aws_codepipeline" "codepipeline" {
         DeploymentGroupName            = aws_codedeploy_deployment_group.spring_group.deployment_group_name
         TaskDefinitionTemplateArtifact = "SourceArtifact"
         AppSpecTemplateArtifact        = "SourceArtifact"
-        AppSpecTemplatePath            = "appspec.yaml"
+        AppSpecTemplatePath            = "appspec.yml"
         TaskDefinitionTemplatePath     = "taskdef.json"
         Image1ArtifactName             = "MyImage"
         Image1ContainerName            = "IMAGE1_NAME"
@@ -197,7 +198,7 @@ resource "aws_iam_role" "codeDeploy" {
   name               = "codeDeployEcs"
   assume_role_policy = data.aws_iam_policy_document.assume_role_codedeploy.json
 
-  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"]
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS"]
 }
 
 data "aws_iam_policy_document" "assume_role_codedeploy" {
