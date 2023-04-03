@@ -44,7 +44,7 @@ resource "aws_codepipeline" "codepipeline" {
 
       configuration = {
         RepositoryName = "spring_example"
-        ImageTag = "latest"
+        ImageTag       = "latest"
       }
     }
   }
