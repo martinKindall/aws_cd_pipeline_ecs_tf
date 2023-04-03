@@ -33,6 +33,19 @@ resource "aws_codepipeline" "codepipeline" {
         DetectChanges        = true
       }
     }
+
+    action {
+      name             = "SpringImage"
+      category         = "Source"
+      owner            = "AWS"
+      provider         = "ECR"
+      version          = "1"
+      output_artifacts = ["MyImage"]
+
+      configuration = {
+        RepositoryName = "spring_example"
+      }
+    }
   }
 
   stage {
@@ -43,7 +56,7 @@ resource "aws_codepipeline" "codepipeline" {
       category        = "Deploy"
       owner           = "AWS"
       provider        = "CodeDeployToECS"
-      input_artifacts = ["SourceArtifact"]
+      input_artifacts = ["SourceArtifact", "MyImage"]
       version         = "1"
 
       configuration = {
@@ -53,6 +66,8 @@ resource "aws_codepipeline" "codepipeline" {
         AppSpecTemplateArtifact        = "SourceArtifact"
         AppSpecTemplatePath            = "appspec.yaml"
         TaskDefinitionTemplatePath     = "taskdef.json"
+        Image1ArtifactName             = "MyImage"
+        Image1ContainerName            = "IMAGE1_NAME"
       }
     }
   }
