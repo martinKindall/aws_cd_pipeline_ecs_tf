@@ -43,7 +43,7 @@ resource "aws_codepipeline" "codepipeline" {
       output_artifacts = ["MyImage"]
 
       configuration = {
-        RepositoryName = "spring_example"
+        RepositoryName = var.repository_name
         ImageTag       = "latest"
       }
     }

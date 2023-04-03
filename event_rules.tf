@@ -10,7 +10,7 @@ resource "aws_cloudwatch_event_rule" "ecr" {
     detail = {
       action-type     = ["PUSH"]
       image-tag       = ["latest"]
-      repository-name = ["spring_example"]
+      repository-name = [var.repository_name]
       result          = ["SUCCESS"]
     }
   })
