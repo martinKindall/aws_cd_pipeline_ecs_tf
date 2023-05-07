@@ -4,11 +4,11 @@ resource "aws_codepipeline" "codepipeline" {
   role_arn = aws_iam_role.codepipeline_role.arn
 
   artifact_store {
-    location = "codepipeline-eu-central-1-682409244870"
+    location = var.codepipeline_bucket
     type     = "S3"
 
     encryption_key {
-      id   = "arn:aws:kms:eu-central-1:371417955885:key/5cbf962c-6244-4405-b582-010c99186f98"
+      id   = var.codepipeline_bucket_encryption_key_arn
       type = "KMS"
     }
   }
@@ -26,8 +26,8 @@ resource "aws_codepipeline" "codepipeline" {
       namespace        = "SourceVariables"
 
       configuration = {
-        ConnectionArn        = "arn:aws:codestar-connections:eu-central-1:371417955885:connection/e4345384-e5a6-453d-9814-c5bacfe4740a"
-        FullRepositoryId     = "martinKindall/aws_code_deploy_example"
+        ConnectionArn        = var.codestar_connection_arn
+        FullRepositoryId     = var.git_repository_name
         BranchName           = "main"
         OutputArtifactFormat = "CODE_ZIP"
         DetectChanges        = true
